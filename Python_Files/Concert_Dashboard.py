@@ -985,7 +985,7 @@ with tab3:
         # Create a dropdown to select which visualization to display
         viz_option = st.selectbox(
             "Select Visualization:",
-            ["Cluster Analysis", "Selection Comparison", "Artist Similarity Network"],
+            ["Cluster Analysis", "Artist Similarity Network"],
             index=0
         )
         
@@ -1210,71 +1210,6 @@ with tab3:
             </div>
             """, unsafe_allow_html=True)
             
-        # Display Selection Comparison visualization when selected
-        elif viz_option == "Selection Comparison":
-            # Get Sabrina, Gracie and top 5 alternatives
-            sabrina = artist_df[artist_df["artists"] == "Sabrina Carpenter"]
-            gracie = artist_df[artist_df["artists"] == "Gracie Abrams"]
-            
-            # Get alternatives (excluding Sabrina and Gracie)
-            alternatives = artist_df[
-                ~artist_df["artists"].isin(["Sabrina Carpenter", "Gracie Abrams"])
-            ].sort_values("ranking_score", ascending=False).head(5)
-            
-            # Combine for comparison
-            comparison_df = pd.concat([sabrina, gracie, alternatives])
-            
-            # Create bar chart
-            fig = px.bar(
-                comparison_df,
-                x="artists",
-                y="ranking_score",
-                color="artists",
-                color_discrete_sequence=[
-                    "#36b1b5" if artist in ["Sabrina Carpenter", "Gracie Abrams"] else "#125fb8"
-                    for artist in comparison_df["artists"]
-                ],
-                labels={
-                    "artists": "Artist",
-                    "ranking_score": "Ranking Score"
-                },
-                title="Artist Selection Comparison"
-            )
-            
-            # Add annotation for Gracie
-            if not gracie.empty:
-                fig.add_annotation(
-                    x=gracie["artists"].values[0],
-                    y=gracie["ranking_score"].values[0] + 5,
-                    text="Selected as second artist",
-                    showarrow=True,
-                    arrowhead=2,
-                    ax=0,
-                    ay=-30
-                )
-            
-            fig.update_layout(
-                height=500,
-                xaxis_tickangle=-45
-            )
-            
-            st.plotly_chart(fig, use_container_width=True)
-            
-            st.markdown("""
-            <div class="bio-card">
-                <h3>Selection Rationale</h3>
-                <p>
-                    From our analysis, we selected Gracie Abrams as the second main artist because:
-                </p>
-                <ul>
-                    <li>Strong ranking score compared to other artists in her cluster</li>
-                    <li>Growing popularity with significant audience overlap with Sabrina's fanbase</li>
-                    <li>Complementary musical style that aligns with our target demographic</li>
-                    <li>Offers demographic diversity while maintaining genre coherence</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-        
         # NEW OPTION: Artist Similarity Network based on the Python notebook
         elif viz_option == "Artist Similarity Network":
             if not spotify_features.empty:
