@@ -994,7 +994,7 @@ with tab3:
         def load_artist_data():
             try:
                 # This is a placeholder - in a real app, you would load from a CSV
-                artist_data = pd.read_csv('artist_scores.csv')
+                artist_data = pd.read_csv('Python_Files/artist_scores.csv')
                 
                 # Get top 30 artists by rank plus Gracie
                 top_artists = artist_data[
