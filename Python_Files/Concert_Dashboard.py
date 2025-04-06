@@ -487,7 +487,7 @@ with tab2:
     # Load artist data
     @st.cache_data
     def load_artist_data():
-        df = pd.read_csv('artist_scores.csv')
+        df = pd.read_csv('Python_Files/artist_scores.csv')
         # Ensure proper data types
         df['frequency'] = df['frequency'].astype(int)
         df['ranking_score'] = df['ranking_score'].astype(float)
