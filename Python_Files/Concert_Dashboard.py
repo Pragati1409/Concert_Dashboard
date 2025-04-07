@@ -104,12 +104,13 @@ def load_data():
 sabrina_songs_df, gracie_songs_df, age_df, artists_df = load_data()
 
 # Create tabs for different sections
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 Audience Demographics",
     "🎤 Sabrina Carpenter Selection Process",
     "🎶 Gracie Abrams Selection Process", 
     "👩‍🎤 Artist Biography", 
-    "🎵 Hit Song Performance"
+    "🎵 Hit Song Performance",
+    "🎸 Sub Performing Artists"
 ])
 
 # Tab 1: Audience Demographics Analysis
@@ -1209,7 +1210,7 @@ with tab3:
                 </p>
             </div>
             """, unsafe_allow_html=True)
-            
+        
         # NEW OPTION: Artist Similarity Network based on the Python notebook
         elif viz_option == "Artist Similarity Network":
             if not spotify_features.empty:
@@ -2041,3 +2042,69 @@ with tab5:
                 <p>iHeartRadio Music Awards nomination</p>
             </div>
             """, unsafe_allow_html=True)
+
+with tab6:
+
+    st.markdown("<div class='section-header'>Sub Performing Artists</div>", unsafe_allow_html=True)
+    nested_tab1, nested_tab2 = st.tabs(["Artist Collabrated with Sabrina Carpenter", "Artist Collabrated with Gracie Abrams"])
+
+    with nested_tab1:
+        subrina_artists_data = {
+            'Artists': ['Rachel Chinouriri', 'Amaarae', 'Griff', 'Declan McKenna', 'Chappell Roan', 
+                        'Teddy Swims', 'The Killers', 'ScHoolboy Q', 'FLETCHER', 'The Japanese House'],
+            'Appearances': [10, 7, 6, 4, 3, 2, 2, 2, 2, 2],
+            'Minimum_Fees': [15000, 25000, 15000, 25000, 1500000, 1500000, 1500000, 150000, 150000, 25000],
+            'Maximum_Fees': [24999, 39999, 24999, 39999, 1999999, 1999999, 1999999, 299000, 299000, 39999],
+            'Genres': [['Alternative rock', 'Indie'], ['Pop', 'Afropop', 'R&B', 'Soul'], ['Pop'], 
+                    ['Alternative rock', 'Indie'], ['Pop'], ['Rap'], ['Rock'], 
+                    ['Hip Hop', 'Rap'], ['Pop'], ['Alternative Pop', 'Indie']],
+            'Pop': ['No', 'Yes', 'Yes', 'No', 'Yes', 'No', 'No', 'No', 'Yes', 'No'],
+            'Rank': [1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 8.0, 7.0, 7.0, 6.0]
+            }
+        # Create DataFrame
+        subrina_artists_df = pd.DataFrame(subrina_artists_data)
+
+        color_discrete_map = {'Yes': 'purple', 'No': 'lightpink'}  # Custom color mapping for Pop genre
+        fig = px.bar(subrina_artists_df.sort_values(by="Appearances", ascending=False).head(10),  # Top 10 artists by appearances
+                    x="Appearances",
+                    y="Artists",
+                    orientation='h',
+                    color="Pop",  # Color by Pop genre
+                    color_discrete_map=color_discrete_map,  # Custom color mapping
+                    hover_data=["Minimum_Fees", "Genres", "Rank"], # Fixed column name to match DataFrame
+                    title="Top Artists Performing with Sabrina Carpenter (Ranked)",
+                    labels={"Appearances": "Number of Appearances", "Artists": "Artist Name"},
+                    text="Rank") # Display Rank on the bars
+        fig.update_traces(texttemplate='%{text:.0f}', textposition='outside') # Format the rank text
+        fig.update_layout(yaxis={'categoryorder':'total ascending'}) # Order bars from lowest to highest appearances
+        st.plotly_chart(fig)
+
+    with nested_tab2:
+        graice_artists_data = {
+            'Artists': ['Tiny Habits', 'Role Model', 'Searows', 'Dora Jar', 'Alix Page', 
+                    'Olivia Rodrigo', 'Taylor Swift', 'Chappell Roan', 'Phoebe Bridgers', 'Noah Kahan'],
+            'Appearances': [17, 15, 14, 11, 11, 7, 6, 6, 5, 3],
+            'Minimum_Fees': [15000, 40000, 15000, 40000, 25000, 1500000, 3755000, 1500000, 300000, 2000000],
+            'Maximum_Fees': [24999, 74999, 24999, 74999, 39999, 1999999, 7450250, 1999999, 499000, 2499999],
+            'Genres': [['Alternative', 'Indie'], ['Pop'], ['Alternative', 'Folk'], ['Pop'], 
+                    ['Alternative', 'Indie', 'Pop'], ['Pop'], ['Contemporary Country', 'Country', 'Country Pop'], 
+                    ['Pop'], ['Indie Rock'], ['Folk-Pop', 'Indie']],
+            'Pop': ['No', 'Yes', 'No', 'Yes', 'Yes', 'Yes', 'Yes', 'Yes', 'No', 'No'],
+            'Rank': [1.0, 2.0, 3.0, 5.0, 4.0, 6.0, 8.0, 7.0, 9.0, 10.0]
+        }
+        # Create DataFrame
+        graice_artists_df = pd.DataFrame(graice_artists_data)
+
+        fig = px.bar(graice_artists_df.sort_values(by="Appearances", ascending=False).head(10),  # Top 10 artists by appearances
+            x="Appearances",
+            y="Artists",
+            orientation='h',
+            color="Pop",  # Color by Pop genre
+            hover_data=["Minimum_Fees", "Genres", "Rank"], # Fixed column name to match DataFrame
+            title="Top Artists Performing with Gracie Abrams (Ranked)",
+            labels={"Appearances": "Number of Appearances", "Artists": "Artist Name", "Minimum_Fees": "Minimum Fees (in Dollars)"},
+            text="Rank") # Display Rank on the bars
+
+        fig.update_traces(texttemplate='%{text:.0f}', textposition='outside') # Format the rank text
+        fig.update_layout(yaxis={'categoryorder':'total ascending'}) # Order bars from lowest to highest appearances
+        st.plotly_chart(fig)
